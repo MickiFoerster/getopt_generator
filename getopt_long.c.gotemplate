@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 
+#define OPTION_WAS_SET 1
 /* Flag set by ‘--verbose’. */
 static int verbose_flag = 0;
 static int help_flag = 0;
@@ -16,17 +17,15 @@ main (int argc, char **argv)
       static struct option long_options[] =
         {
           /* These options set a flag. */
-          {"verbose", no_argument,       &verbose_flag, 1},
-          {"v",       no_argument,       &verbose_flag, 1},
-          {"help",    no_argument,       &help_flag,    1},
-          {"h",       no_argument,       &help_flag,    1},
-          /* These options don’t set a flag.
-             We distinguish them by their indices. */
-          {"add",     no_argument,       0, 'a'},
-          {"append",  no_argument,       0, 'b'},
-          {"delete",  required_argument, 0, 'd'},
-          {"create",  required_argument, 0, 'c'},
-          {"file",    required_argument, 0, 'f'},
+          {"verbose", no_argument,       &verbose_flag, OPTION_WAS_SET},
+          {"v",       no_argument,       &verbose_flag, OPTION_WAS_SET},
+          {"help",    no_argument,       &help_flag,    OPTION_WAS_SET},
+          {"h",       no_argument,       &help_flag,    OPTION_WAS_SET},
+          {"add",     no_argument,       0,             'a'},
+          {"append",  no_argument,       0,             'b'},
+          {"delete",  required_argument, 0,             'd'},
+          {"create",  required_argument, 0,             'c'},
+          {"file",    required_argument, 0,             'f'},
           {0, 0, 0, 0}
         };
       /* getopt_long stores the option index here. */

@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -48,8 +49,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("cannot unmarshal data: %v", err)
 	}
+
+	// sort slice
+	sort.Slice(opts, func(i, j int) bool {
+		return opts[i].Option.Abbreviation < opts[j].Option.Abbreviation
+	})
+
 	for _, opt := range opts {
-		fmt.Printf("%v\n", opt)
+		fmt.Printf("{% 20q, % 20v, 0, '%c'}\n",
+			opt.Option.Name,
+			opt.Option.HasArg.Type,
+			opt.Option.Abbreviation[0])
 	}
 
 	f, err := os.Create(fn)

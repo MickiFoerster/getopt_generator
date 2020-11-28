@@ -7,69 +7,61 @@ main (int argc, char **argv)
 {
   int c;
 
-  while (1)
-    {
-      static struct option long_options[] =
-        {
-          {"add",     no_argument,       0, 'a'},
-          {"append",  no_argument,       0, 'b'},
-          {"create",  required_argument, 0, 'c'},
-          {"delete",  required_argument, 0, 'd'},
-          {"file",    required_argument, 0, 'f'},
-          {"help",    no_argument,       0, 'h'},
-          {"verbose", no_argument,       0, 'v'},
-          {0, 0, 0, 0}
-        };
+  while (1) {
+      static struct option long_options[] = {
+          {{range .}}{{.OptionDef}},
+          {{end}}{0, 0, 0, 0}
+      };
       /* getopt_long stores the option index here. */
       int option_index = 0;
 
       c = getopt_long (argc, argv, "abc:d:f:hv",
-                       long_options, &option_index);
+              long_options, &option_index);
 
       /* Detect the end of the options. */
       if (c == -1)
-        break;
+          break;
 
       switch (c)
-        {
-        case 0:
-          /* If this option set a flag, do nothing else now. */
-          if (long_options[option_index].flag != 0)
-            break;
-          printf ("option %s", long_options[option_index].name);
-          if (optarg)
-            printf (" with arg %s", optarg);
-          printf ("\n");
-          break;
-        case 'a':
-          puts ("option -a\n");
-          break;
-        case 'b':
-          puts ("option -b\n");
-          break;
-        case 'v':
-          puts ("option -v\n");
-          break;
-        case 'h':
-          puts ("option -h\n");
-          break;
-        case 'c':
-          printf ("option -c with value `%s'\n", optarg);
-          break;
-        case 'd':
-          printf ("option -d with value `%s'\n", optarg);
-          break;
-        case 'f':
-          printf ("option -f with value `%s'\n", optarg);
-          break;
-        case '?':
-          /* getopt_long already printed an error message. */
-          break;
-        default:
-          fprintf(stderr, "unhandled case\n");
-          abort ();
-        }
-    }
+      {
+          case 0:
+              /* If this option set a flag, do nothing else now. */
+              if (long_options[option_index].flag != 0)
+                  break;
+              printf ("option %s", long_options[option_index].name);
+              if (optarg)
+                  printf (" with arg %s", optarg);
+              printf ("\n");
+              break;
+          case 'a':
+              puts ("option -a\n");
+              break;
+          case 'b':
+              puts ("option -b\n");
+              break;
+          case 'v':
+              puts ("option -v\n");
+              break;
+          case 'h':
+              puts ("option -h\n");
+              break;
+          case 'c':
+              printf ("option -c with value `%s'\n", optarg);
+              break;
+          case 'd':
+              printf ("option -d with value `%s'\n", optarg);
+              break;
+          case 'f':
+              printf ("option -f with value `%s'\n", optarg);
+              break;
+          case '?':
+              /* getopt_long already printed an error message. */
+              break;
+          default:
+              fprintf(stderr, "unhandled case\n");
+              abort ();
+      }
+  }
 
   /* Print any remaining command line arguments (not options). */
   if (optind < argc)

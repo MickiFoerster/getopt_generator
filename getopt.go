@@ -36,6 +36,13 @@ type Options []struct {
 	} `yaml:"option"`
 }
 
+type TemplateOption struct {
+	OptionDef  string
+	OptionTest string
+}
+
+type TemplateData []TemplateOption
+
 var getopt_long_c_prg = template.Must(template.ParseFiles("getopt_long.c.gotemplate"))
 
 func main() {
@@ -55,11 +62,16 @@ func main() {
 		return opts[i].Option.Abbreviation < opts[j].Option.Abbreviation
 	})
 
+	var template_data TemplateData
 	for _, opt := range opts {
-		fmt.Printf("{% 20q, % 20v, 0, '%c'}\n",
+		optdef := fmt.Sprintf("{% 20q, % 20v, 0, '%c'}",
 			opt.Option.Name,
 			opt.Option.HasArg.Type,
 			opt.Option.Abbreviation[0])
+		template_data = append(template_data, TemplateOption{
+			OptionDef:  optdef,
+			OptionTest: "",
+		})
 	}
 
 	f, err := os.Create(fn)
@@ -67,12 +79,12 @@ func main() {
 		log.Fatalf("error: could not create file: %v", err)
 	}
 
-	if err := getopt_long_c_prg.Execute(f, nil); err != nil {
+	if err := getopt_long_c_prg.Execute(f, template_data); err != nil {
 		log.Fatalf("error: could execute template: %v", err)
 	}
 	f.Close()
 	// Postprocess with clang-format
-	applyClangFormat(fn)
+	//applyClangFormat(fn)
 
 	fmt.Println("Now, we test this code by using:")
 	testOutputWithCompiler("gcc", fn)

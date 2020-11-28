@@ -41,7 +41,10 @@ type TemplateOption struct {
 	OptionTest string
 }
 
-type TemplateData []TemplateOption
+type TemplateData struct {
+	Option       []TemplateOption
+	OptionString string
+}
 
 var getopt_long_c_prg = template.Must(template.ParseFiles("getopt_long.c.gotemplate"))
 
@@ -62,16 +65,21 @@ func main() {
 		return opts[i].Option.Abbreviation < opts[j].Option.Abbreviation
 	})
 
-	var template_data TemplateData
+	var templ_opts []TemplateOption
+	var optstring string
 	for _, opt := range opts {
-		optdef := fmt.Sprintf("{% 20q, % 20v, 0, '%c'}",
+		optdef := fmt.Sprintf("{% 15q, % 20v, 0, '%c'}",
 			opt.Option.Name,
 			opt.Option.HasArg.Type,
 			opt.Option.Abbreviation[0])
-		template_data = append(template_data, TemplateOption{
+		templ_opts = append(templ_opts, TemplateOption{
 			OptionDef:  optdef,
 			OptionTest: "",
 		})
+	}
+	template_data := TemplateData{
+		Option:       templ_opts,
+		OptionString: optstring,
 	}
 
 	f, err := os.Create(fn)

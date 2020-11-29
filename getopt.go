@@ -33,6 +33,7 @@ type Options []struct {
 				Values []string `yaml:"values"`
 			} `yaml:"optional_argument"`
 		} `yaml:"has_arg"`
+		HelpText string `yaml:"help_text"`
 	} `yaml:"option"`
 }
 
@@ -44,6 +45,7 @@ type TemplateOption struct {
 type TemplateData struct {
 	Option       []TemplateOption
 	OptionString string
+	Helpstring   string
 }
 
 var getopt_long_c_prg = template.Must(template.ParseFiles("getopt_long.c.gotemplate"))
@@ -66,6 +68,13 @@ func main() {
 
 	var templ_opts []TemplateOption
 	var optstring string
+	helpstring := `This is description text\n\
+\n\
+Options :\n\
+  -1, --line Blabla\n\
+`
+	list_options := ""
+	line_length := 0
 	for _, opt := range opts {
 		optdef := fmt.Sprintf("{% 15q, % 20v, 0, '%c'}",
 			opt.Option.Name,
@@ -106,10 +115,27 @@ func main() {
 			OptionDef:  optdef,
 			OptionTest: opttest,
 		})
+
+		s := fmt.Sprintf("[-%c|--%s] ", opt.Option.Abbreviation[0], opt.Option.Name)
+		if line_length+len(s) > 80 {
+			list_options += `\n\` + "\n" + s
+			line_length = len(s)
+		} else {
+			list_options += s
+			line_length += len(s)
+		}
+
+		helpstring += fmt.Sprintf(`  -%c, --%s %s\n\`+"\n",
+			opt.Option.Abbreviation[0], opt.Option.Name, opt.Option.HelpText)
 	}
+	list_options += `\n\` + "\n"
+
 	template_data := TemplateData{
 		Option:       templ_opts,
 		OptionString: optstring,
+		Helpstring: fmt.Sprintf(`\n\
+%s\n\
+%s`, list_options, helpstring),
 	}
 
 	f, err := os.Create(fn)

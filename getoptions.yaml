@@ -3,36 +3,37 @@
     abbreviation: h
     has_arg: 
       type: no_argument
+    help_text: "Prints this message"
 - option:
     name: verbose
     abbreviation: v
     has_arg: 
       type: no_argument
+    help_text: "Verbose output"
 - option:
     name: add
     abbreviation: a
     has_arg: 
       type: no_argument
-- option:
-    name: append
-    abbreviation: b
-    has_arg: 
-      type: no_argument
+    help_text: "Add something"
 - option:
     name: append
     abbreviation: d
     has_arg: 
       type: required_argument 
+    help_text: "Append something"
 - option:
     name: create
     abbreviation: c
     has_arg: 
       type: required_argument 
+    help_text: "Create something"
 - option:
     name: file
     abbreviation: f
     has_arg: 
       type: required_argument 
+    help_text: "Input file"
 - option:
     name: list
     abbreviation: l
@@ -44,6 +45,7 @@
           - all
           - running
           - stopped
+    help_text: "List something"
 - option:
     name: info
     abbreviation: i
@@ -51,3 +53,4 @@
       type: optional_argument 
       optional_argument:
         type: string
+    help_text: "Information about something"

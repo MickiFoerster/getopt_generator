@@ -60,7 +60,6 @@ func main() {
 		log.Fatalf("cannot unmarshal data: %v", err)
 	}
 
-	// sort slice
 	sort.Slice(opts, func(i, j int) bool {
 		return opts[i].Option.Abbreviation < opts[j].Option.Abbreviation
 	})
@@ -72,9 +71,40 @@ func main() {
 			opt.Option.Name,
 			opt.Option.HasArg.Type,
 			opt.Option.Abbreviation[0])
+
+		var opttest string
+		switch opt.Option.HasArg.Type {
+		case "no_argument":
+			optstring += fmt.Sprintf("%c", opt.Option.Abbreviation[0])
+			opttest = fmt.Sprintf(`
+            case '%c':
+                puts ("option -%c was given\n");
+                break;
+            `, opt.Option.Abbreviation[0], opt.Option.Abbreviation[0])
+		case "required_argument":
+			optstring += fmt.Sprintf("%c:", opt.Option.Abbreviation[0])
+			opttest = fmt.Sprintf(`
+            case '%c':
+                printf ("option -%c was given with value '%%s'\n", optarg);
+                break;
+            `, opt.Option.Abbreviation[0], opt.Option.Abbreviation[0])
+		case "optional_argument":
+			optstring += fmt.Sprintf("%c::", opt.Option.Abbreviation[0])
+			opttest = fmt.Sprintf(`
+            case '%c':
+                if (optarg)
+                    printf ("option -%c was given with value '%%s'\n", optarg);
+                else
+                    printf ("option -%c was given witout value\n");
+                break;
+            `, opt.Option.Abbreviation[0], opt.Option.Abbreviation[0],
+				opt.Option.Abbreviation[0])
+		default:
+		}
+
 		templ_opts = append(templ_opts, TemplateOption{
 			OptionDef:  optdef,
-			OptionTest: "",
+			OptionTest: opttest,
 		})
 	}
 	template_data := TemplateData{
@@ -182,12 +212,11 @@ func testOutputWithCompiler(compiler string, inputfile string) {
 
 	cmd := exec.Command(compiler, args...)
 	err := cmd.Run()
+	fmt.Printf("% 74s", s)
 	if err != nil {
-		fmt.Printf("%-40s", s)
-		color.Red(" %10s ", "[failed]")
+		color.Red(" % 10s ", "[failed]")
 		fmt.Println(err)
 	} else {
-		fmt.Printf("%-40s", s)
-		color.Green(" %10s ", "[OK]")
+		color.Green(" % 5s ", "[OK]")
 	}
 }

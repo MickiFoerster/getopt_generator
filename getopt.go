@@ -71,10 +71,15 @@ func main() {
 	helpstring := `This is description text\n\
 \n\
 Options :\n\
-  -1, --line Blabla\n\
 `
 	list_options := ""
 	line_length := 0
+	max_len := len(opts[0].Option.Name)
+	for _, opt := range opts {
+		if len(opt.Option.Name) > max_len {
+			max_len = len(opt.Option.Name)
+		}
+	}
 	for _, opt := range opts {
 		optdef := fmt.Sprintf("{% 15q, % 20v, 0, '%c'}",
 			opt.Option.Name,
@@ -85,11 +90,15 @@ Options :\n\
 		switch opt.Option.HasArg.Type {
 		case "no_argument":
 			optstring += fmt.Sprintf("%c", opt.Option.Abbreviation[0])
+			usage := ""
+			if opt.Option.Name == "help" {
+				usage = " usage(argv[0]);"
+			}
 			opttest = fmt.Sprintf(`
             case '%c':
-                puts ("option -%c was given\n");
+                puts ("option -%c was given\n");%s
                 break;
-            `, opt.Option.Abbreviation[0], opt.Option.Abbreviation[0])
+            `, opt.Option.Abbreviation[0], opt.Option.Abbreviation[0], usage)
 		case "required_argument":
 			optstring += fmt.Sprintf("%c:", opt.Option.Abbreviation[0])
 			opttest = fmt.Sprintf(`
@@ -125,8 +134,12 @@ Options :\n\
 			line_length += len(s)
 		}
 
-		helpstring += fmt.Sprintf(`  -%c, --%s %s\n\`+"\n",
-			opt.Option.Abbreviation[0], opt.Option.Name, opt.Option.HelpText)
+		indent := ""
+		for i := 0; i < max_len-len(opt.Option.Name); i++ {
+			indent += " "
+		}
+		helpstring += fmt.Sprintf(`  -%c, --%s %s%s\n\`+"\n",
+			opt.Option.Abbreviation[0], opt.Option.Name, indent, opt.Option.HelpText)
 	}
 	list_options += `\n\` + "\n"
 

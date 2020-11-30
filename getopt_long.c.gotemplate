@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <getopt.h>
 
-/*
-{{.Helpstring}}
-*/
+static void 
+usage(const char *progname) {
+    char help_msg[] = "{{.Helpstring}}";
+    printf("Usage: %s\n%s", progname, help_msg);
+}
 
-int
+static int
 process_commandline (int argc, char **argv) {
     struct option long_options[] = {
         {{range .Option}}{{.OptionDef}},

@@ -161,7 +161,7 @@ Options :\n\
 	}
 	f.Close()
 	// Postprocess with clang-format
-	//applyClangFormat(fn)
+	applyClangFormat(fn)
 
 	fmt.Println("Now, we test this code by using:")
 	testOutputWithCompiler("gcc", fn)

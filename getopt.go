@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -18,8 +19,7 @@ import (
 )
 
 const (
-	yml = "getoptions.yaml"
-	fn  = "getopt_long.c"
+	fn = "getopt_long.c"
 )
 
 type Options []struct {
@@ -51,7 +51,10 @@ type TemplateData struct {
 var getopt_long_c_prg = template.Must(template.ParseFiles("getopt_long.c.gotemplate"))
 
 func main() {
-	data, err := ioutil.ReadFile(yml)
+	yml := flag.String("f", "getoptions.yaml", "YAML file with command-line options")
+	flag.Parse()
+
+	data, err := ioutil.ReadFile(*yml)
 	if err != nil {
 		log.Fatalf("error: could not read file: %v", err)
 	}
